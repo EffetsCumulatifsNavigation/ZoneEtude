@@ -132,11 +132,17 @@ dat <- '/hydro_s/aat.adf'
 cover <- list()
 for(i in 1:length(f)) {
   uid <- paste0(f[i], dat)
-  cover[[i]] <- st_read(uid, 'PAL')
+  cover[[i]] <- st_read(uid, 'PAL', options = "ENCODING=UTF-8")
 }
 
+# Weird thing with encoding, need to figure this out later
+sag <- character()
+for(i in 1:length(cover)) sag <- c(sag, cover[[i]]$TOPONYME)
+sag <- sort(unique(sag))[1531]
+
+
 # Select water only
-topo <- c("Rivi\xe8re Saguenay","Fleuve Saint-Laurent","Golfe du Saint-Laurent")
+topo <- c(sag,"Fleuve Saint-Laurent","Golfe du Saint-Laurent")
 for(i in 1:length(cover)) {
   uid <- cover[[i]]$TOPONYME %in% topo
   cover[[i]] <- cover[[i]][uid,]
@@ -203,5 +209,5 @@ cover <- st_crop(cover, xmin = w, ymin = s, xmax = e, ymax = n)
 #
 #
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
-st_write(cover, dsn = './Data/StudyArea/StudyArea.shp')
+st_write(cover, dsn = './Data/StudyArea/StudyArea.shp', append = FALSE)
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
