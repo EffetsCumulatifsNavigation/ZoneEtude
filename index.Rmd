@@ -1,0 +1,21 @@
+---
+title: "Zone d'étude"
+output:
+  html_document:
+    toc: false
+---
+
+<style type="text/css">
+.main-container {
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r, echo = FALSE, warnings = FALSE, message = FALSE, fig.width = 14, fig.height = 7}
+library(sf)
+library(mapview)
+cover <- st_read('./Data/StudyArea/StudyArea.shp', quiet = TRUE)
+mapview(cover)
+```

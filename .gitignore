@@ -1,3 +1,7 @@
+# Project specific files and folders
+Data/BDTQ
+Data/Shoreline
+
 # History files
 .Rhistory
 .Rapp.history
@@ -37,3 +41,5 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+.DS_Store
