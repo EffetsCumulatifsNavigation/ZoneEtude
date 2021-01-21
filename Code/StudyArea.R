@@ -204,10 +204,14 @@ cover <- st_crop(cover, xmin = w, ymin = s, xmax = e, ymax = n)
 
 
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
-# Export
-# ------
+# Export and zip
+# --------------
 #
 #
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
+# Export shapefile
 st_write(cover, dsn = './Data/StudyArea/StudyArea.shp', append = FALSE)
+
+# Zip shapefile
+zip(zipfile = './Data/StudyArea/StudyArea.zip', files = './Data/StudyArea/')
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
