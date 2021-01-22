@@ -39,21 +39,35 @@ shore <- st_read("./Data/Shoreline/ShorelineClassification_QC_OpenDataCatalogue.
 #
 #
 # The study area is limited at:
-#   - West: Châteaugay
-#   - East: Pointe-des-Monts
+#   - West: Châteaugay c(45.36036045135636, -73.75031695865471)
+#   - North-East: Pointe-des-Monts c(49.3201737746945, -67.3863570885806)
+#   - South-East: Cap-Chat c(49.08400517243045, -66.73280250278107)
+#   - Saguenay: Saint-Fulgence c(48.45866465291821, -70.90417373996353)
 #
 # Clip shoreline classification
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
-# bbox
-w <- -67.37
-e <- -73.74
-s <- 45
-n <- 50
+# Coordinates to form polygon
+ch <- c(-73.75031695865471, 45.36036045135636)
+pdm <- c(-67.3863570885806, 49.3201737746945)
+cc <- c(-66.73280250278107, 49.08400517243045)
+stf <- c(-70.90417373996353, 48.45866465291821)
+
+# Matrix of coordinates
+mat <- matrix(c(ch, ch[1], ch[2]+1, stf, pdm[1]-.4, pdm[2]+.1, pdm, cc, cc[1]-6, ch[2], ch), ncol = 2, byrow = TRUE,
+              dimnames = list(c(), c('Longitude','Latitude')))
+
+# Geometry to crop extent
+bb <- mat %>%
+      as.data.frame() %>%
+      st_as_sf(coords = c('Longitude','Latitude'), crs = 4326) %>%
+      group_by() %>%
+      summarise(geometry = st_combine(geometry)) %>%
+      st_cast("POLYGON")
+mapview(bb)
 
 # Crop shoreline classification
-shore <- st_crop(shore, xmin = w, ymin = s, xmax = e, ymax = n)
+shore <- st_crop(shore, bb)
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
-
 
 
 
@@ -83,7 +97,6 @@ unzip(zipfile = output, exdir = './Data/BDTQ/Index/')
 index <- st_read("./Data/BDTQ/Index/Index_BDTQ.shp") %>%
          st_transform(4326)
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
-
 
 
 
@@ -136,10 +149,12 @@ for(i in 1:length(f)) {
 }
 
 # Weird thing with encoding, need to figure this out later
+# For now, it'll be ugly to identify the Saguenay River
 sag <- character()
 for(i in 1:length(cover)) sag <- c(sag, cover[[i]]$TOPONYME)
-sag <- sort(unique(sag))[1531]
-
+sag <- sort(unique(sag))
+sag <- sag[stringr::str_detect(sag, 'Saguenay')]
+sag <- sag[!stringr::str_detect(sag, 'Petit')]
 
 # Select water only
 topo <- c(sag,"Fleuve Saint-Laurent","Golfe du Saint-Laurent")
@@ -150,7 +165,8 @@ for(i in 1:length(cover)) {
 
 # Single polygon
 cover <- bind_rows(cover) %>%
-         summarise(Area = sum(AREA))
+         summarise(Area = sum(AREA)) %>%
+         mutate(Zone = 'Zone_Etude_TC_CumulEffets')
 
 # Transforme projection
 cover <- st_transform(cover, 4326)
@@ -183,10 +199,10 @@ cover <- st_transform(cover, 4326)
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
 gaps <- st_read('./Data/BDTQ/Gaps/Gaps.shp') %>%
         st_buffer(0) %>%
-        mutate(Area = 0)
+        mutate(Zone = 'Zone_Etude_TC_CumulEffets')
 
 # Bind and union
-cover <- rbind(cover, gaps[,'Area']) %>%
+cover <- rbind(cover[,'Zone'], gaps[,'Zone']) %>%
          st_union()
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
 
@@ -197,9 +213,8 @@ cover <- rbind(cover, gaps[,'Area']) %>%
 #
 #
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
-cover <- st_crop(cover, xmin = w, ymin = s, xmax = e, ymax = n)
+cover <- st_intersection(cover, bb)
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
-
 
 
 
