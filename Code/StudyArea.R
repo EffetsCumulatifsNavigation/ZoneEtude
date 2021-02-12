@@ -216,6 +216,14 @@ cover <- rbind(cover[,'Zone'], gaps[,'Zone']) %>%
 cover <- st_intersection(cover, bb)
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
 
+# =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
+# Transform projection
+# --------------------
+#
+# Use Québec Lambert EPSG:32198
+# =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
+cover <- st_transform(cover, crs = 32198)
+# =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
 
 
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
@@ -225,8 +233,5 @@ cover <- st_intersection(cover, bb)
 #
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
 # Export shapefile
-st_write(cover, dsn = './Data/StudyArea/StudyArea.shp', append = FALSE)
-
-# Zip shapefile
-zip(zipfile = './Data/StudyArea/StudyArea.zip', files = './Data/StudyArea/')
+st_write(cover, dsn = './Data/StudyArea/StudyArea.geojson', append = FALSE)
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #

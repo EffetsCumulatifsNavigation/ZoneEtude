@@ -16,6 +16,6 @@ output:
 ```{r, echo = FALSE, warnings = FALSE, message = FALSE, fig.width = 14, fig.height = 7}
 library(sf)
 library(mapview)
-cover <- st_read('./Data/StudyArea/StudyArea.shp', quiet = TRUE)
+cover <- st_read('./Data/StudyArea/StudyArea.geojson', quiet = TRUE)
 mapview(cover)
 ```
