@@ -46,6 +46,7 @@ r2000 <- stars::st_rasterize(tcbuf["val_ras"], template = template)
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
 # Warp 2km x 2km raster to 1km x 1km raster
 r1000 <- st_warp(r2000, cellsize = c(1000,1000), crs = 32198)
+st_crs(r1000) <- 32198 # This is weird, and may be a mistake
 # =~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~=~-~= #
 
 
